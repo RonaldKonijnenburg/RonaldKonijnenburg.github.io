@@ -1,1 +1,153 @@
-﻿<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8">  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>SAP BW 7.5 Retirement Timer</title>  <style>    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');    :root{      --bg:#0d1117;      --fg:#e6edf3;      --sub:#8b949e;      --accent:#2563eb;      --accent-hover:#1d4ed8;    }    *{box-sizing:border-box;}    body{      margin:0;      display:flex;      flex-direction:column;      align-items:center;      min-height:100vh;      background:var(--bg);      color:var(--fg);      font-family:'Inter',sans-serif;      text-align:center;      padding:3rem 1rem;    }    h1{      font-size:2.5rem;      line-height:1.2;      margin:0 0 2rem;    }    .subtext{      font-size:1rem;      color:var(--sub);      margin:0 auto 2rem;      max-width:600px;      padding:0 1rem;      line-height:1.5;    }    .subtext input {      width:6ch;      text-align:right;      background:var(--bg);      color:var(--fg);      border:1px solid var(--sub);      border-radius:4px;      padding:4px 6px;      margin:0 0.2ch;      font-size:1rem;    }    #migration-days {      color: var(--fg);      font-weight:600;    }    #migration-date {      color: var(--fg);      font-weight:600;      margin-left:0.2ch;    }    #migration-msg {      display:block;      margin-top:0.5rem;      color: #f56565;      font-weight:600;    }    h2{      font-size:1.7rem;      margin:0 0 1rem;      font-weight:600;    }    section {      max-width:65rem;      width:100%;      padding:0 1rem;    }    .timer{      display:flex;      gap:2rem;      justify-content:center;      font-size:3rem;      font-weight:600;      padding:1rem 0.5rem 2rem;    }    .unit{      display:flex;      flex-direction:column;      align-items:center;    }    .value{min-width:4ch;}    .label{      font-size:0.8rem;      font-weight:400;      text-transform:uppercase;      letter-spacing:0.05em;      margin-top:0.5rem;      color:var(--sub);    }    .cta{      display:inline-block;      margin:3rem auto;      padding:0.85rem 2rem;      background:var(--accent);      color:#fff;      font-weight:600;      border-radius:0.5rem;      text-decoration:none;      transition:background 0.2s,transform 0.2s;    }    .cta:hover{background:var(--accent-hover);transform:translateY(-2px);}     .cta:active{transform:translateY(0);}     hr{      border:none;      border-top:1px solid var(--sub);      width:50%;      margin:2rem auto;      opacity:0.4;    }  </style></head><body>  <h1 id="title">SAP BW 7.5 Retirement Timer</h1>  <p class="subtext">    Planning for a BW migration, getting the budget in place and migrating to BW/4HANA compatible objects takes at least    <input id="migration-months-input" type="number" min="1" value="24"> months in my organisation.<br>    I have <span id="migration-days">0</span> days left to start (by <span id="migration-date"></span>).    <span id="migration-msg"></span>  </p>  <hr>  <section aria-labelledby="bw75-heading">    <h2 id="bw75-heading">SAP BW 7.5</h2>    <div class="timer" role="group" aria-label="Countdown for SAP BW 7.5 on HANA">      <div class="unit"><span id="bw75-days" class="value">0</span><span class="label">Days</span></div>      <div class="unit"><span id="bw75-hours" class="value">0</span><span class="label">Hours</span></div>      <div class="unit"><span id="bw75-minutes" class="value">0</span><span class="label">Minutes</span></div>      <div class="unit"><span id="bw75-seconds" class="value">0</span><span class="label">Seconds</span></div>    </div>  </section>  <hr>  <section aria-labelledby="pce-heading">    <h2 id="pce-heading">SAP BW 7.5 (Running in Business Data Cloud)</h2>    <div class="timer" role="group" aria-label="Countdown for SAP BW on HANA PCE">      <div class="unit"><span id="pce-days" class="value">0</span><span class="label">Days</span></div>      <div class="unit"><span id="pce-hours" class="value">0</span><span class="label">Hours</span></div>      <div class="unit"><span id="pce-minutes" class="value">0</span><span class="label">Minutes</span></div>      <div class="unit"><span id="pce-seconds" class="value">0</span><span class="label">Seconds</span></div>    </div>  </section>  <hr>  <a class="cta" href="https://www.interdobs.nl/welcome-to-the-future-of-your-sap-datawarehousing-environment/" target="_blank" rel="noopener">Please help me</a>  <script>    (function(){      'use strict';      const targets = [        {end:'2027-12-31T00:00:00',prefix:'bw75'},        {end:'2030-12-31T00:00:00',prefix:'pce'}      ];      const pad = n => String(n).padStart(2,'0');      function getMigrationMonths() {        return parseInt(document.getElementById('migration-months-input').value, 10) || 0;      }      function update() {        const now = new Date();        const bwEnd = new Date(targets[0].end);        const months = getMigrationMonths();        const migrationStart = new Date(bwEnd);        migrationStart.setMonth(migrationStart.getMonth() - months);        const diffMs = migrationStart - now;        const daysM = Math.floor(diffMs / (1000 * 60 * 60 * 24));        document.getElementById('migration-days').textContent = daysM;        document.getElementById('migration-date').textContent = migrationStart.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });        const msgEl = document.getElementById('migration-msg');        msgEl.textContent = daysM < 0 ? 'Ran out of time!' : '';        targets.forEach(t => {          const diff = Math.max(new Date(t.end) - now, 0);          const sec = Math.floor(diff/1000);          const days = Math.floor(sec/86400);          const hours = Math.floor((sec%86400)/3600);          const minutes = Math.floor((sec%3600)/60);          const seconds = sec%60;          ['days','hours','minutes','seconds'].forEach((u,i) => {            const el = document.getElementById(`${t.prefix}-${u}`);            if(el) el.textContent = pad([days,hours,minutes,seconds][i]);          });        });      }      document.getElementById('migration-months-input').addEventListener('input', update);      update();      setInterval(update,1000);    })();  </script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAP BW 7.5 Retirement Timer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    :root{
+      --bg:#0d1117;
+      --fg:#e6edf3;
+      --sub:#8b949e;
+      --accent:#2563eb;
+      --accent-hover:#1d4ed8;
+      --easter-bg:#fff1a8;
+      --easter-border:#fcd34d;
+      --easter-color:#7e3af2;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-height:100vh;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:'Inter',sans-serif;
+      text-align:center;
+      padding:3rem 1rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    /* Easter mode body style */
+    .easter-mode { background: var(--easter-bg); color: var(--easter-color); }
+    h1{ font-size:2.5rem; line-height:1.2; margin:0 0 2rem; }
+    .subtext{ font-size:1rem; color:var(--sub); margin:0 auto 2rem; max-width:600px; padding:0 1rem; line-height:1.5; }
+    .subtext input { width:6ch; text-align:right; background:var(--bg); color:var(--fg); border:1px solid var(--sub); border-radius:4px; padding:4px 6px; margin:0 0.2ch; font-size:1rem; }
+    #migration-days { color: var(--fg); font-weight:600; }
+    #migration-date { color: var(--fg); font-weight:600; margin-left:0.2ch; }
+    #migration-msg { display:block; margin-top:0.5rem; color: #f56565; font-weight:600; }
+    h2{ font-size:1.7rem; margin:0 0 1rem; font-weight:600; }
+    section { max-width:65rem; width:100%; padding:0 1rem; }
+    .timer{ display:flex; gap:2rem; justify-content:center; font-size:3rem; font-weight:600; padding:1rem 0.5rem 2rem; }
+    .unit{ display:flex; flex-direction:column; align-items:center; }
+    .value{ min-width:4ch; }
+    .label{ font-size:0.8rem; font-weight:400; text-transform:uppercase; letter-spacing:0.05em; margin-top:0.5rem; color:var(--sub); }
+    .cta{ display:inline-block; margin:3rem auto; padding:0.85rem 2rem; background:var(--accent); color:#fff; font-weight:600; border-radius:0.5rem; text-decoration:none; transition:background 0.2s,transform 0.2s; }
+    .cta:hover{ background:var(--accent-hover); transform:translateY(-2px); }
+    .cta:active{ transform:translateY(0); }
+    hr{ border:none; border-top:1px solid var(--sub); width:50%; margin:2rem auto; opacity:0.4; }
+    /* Easter egg banner */
+    @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-10px); } }
+    #combined-egg {
+      display:none;
+      position:fixed;
+      top:15%; left:50%; transform:translateX(-50%);
+      background:var(--easter-bg);
+      color:var(--easter-color);
+      border:2px dashed var(--easter-border);
+      padding:1rem 2rem;
+      border-radius:1rem;
+      box-shadow:0 6px 12px rgba(0,0,0,0.3);
+      z-index:1000;
+      font-size:1.1rem;
+      animation:bounce 0.5s ease infinite alternate;
+      /* Removed mix-blend-mode for readability */
+    }
+  </style>
+</head>
+<body>
+  <h1>SAP BW 7.5 Retirement Timer</h1>
+  <p class="subtext">
+    Planning for a BW migration, getting the budget in place and migrating to BW/4HANA compatible objects takes at least
+    <input id="migration-months-input" type="number" min="1" value="24"> months in my organisation.<br>
+    I have <span id="migration-days">0</span> days left to start (by <span id="migration-date"></span>).
+    <span id="migration-msg"></span>
+  </p>
+  <hr>
+  <section aria-labelledby="bw75-heading">
+    <h2 id="bw75-heading">SAP BW 7.5</h2>
+    <div class="timer" role="group" aria-label="Countdown for SAP BW 7.5 on HANA">
+      <div class="unit"><span id="bw75-days" class="value">0</span><span class="label">Days</span></div>
+      <div class="unit"><span id="bw75-hours" class="value">0</span><span class="label">Hours</span></div>
+      <div class="unit"><span id="bw75-minutes" class="value">0</span><span class="label">Minutes</span></div>
+      <div class="unit"><span id="bw75-seconds" class="value">0</span><span class="label">Seconds</span></div>
+    </div>
+  </section>
+  <hr>
+  <section aria-labelledby="pce-heading">
+    <h2 id="pce-heading">SAP BW 7.5 (Running in Business Data Cloud)</h2>
+    <div class="timer" role="group" aria-label="Countdown for SAP BW on HANA PCE">
+      <div class="unit"><span id="pce-days" class="value">0</span><span class="label">Days</span></div>
+      <div class="unit"><span id="pce-hours" class="value">0</span><span class="label">Hours</span></div>
+      <div class="unit"><span id="pce-minutes" class="value">0</span><span class="label">Minutes</span></div>
+      <div class="unit"><span id="pce-seconds" class="value">0</span><span class="label">Seconds</span></div>
+    </div>
+  </section>
+  <div id="combined-egg"></div>
+  <hr>
+  <a class="cta" href="#">Please help me</a>
+
+  <script>
+    (function(){
+      const targets=[{end:'2027-12-31T00:00:00',prefix:'bw75'},{end:'2030-12-31T00:00:00',prefix:'pce'}];
+      const pad=n=>String(n).padStart(2,'0');
+      let interdobsMode=false;
+
+      const monthsInput=document.getElementById('migration-months-input');
+      const daysEl=document.getElementById('migration-days');
+      const dateEl=document.getElementById('migration-date');
+      const msgEl=document.getElementById('migration-msg');
+
+      function getMigrationMonths(){return parseInt(monthsInput.value,10)||0;}
+
+      function updateCountdown(){
+        const now=new Date(),bwEnd=new Date(targets[0].end);
+        let months=getMigrationMonths();if(interdobsMode)months=Math.ceil(months/2);
+        const migrationStart=new Date(bwEnd);
+        migrationStart.setMonth(migrationStart.getMonth()-months);
+        const diffMs=migrationStart-now;
+        const days=Math.floor(diffMs/(1000*60*60*24));
+        daysEl.textContent=days;
+        dateEl.textContent=migrationStart.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+        msgEl.textContent=days<0?'Ran out of time!':'';
+        targets.forEach(t=>{const diff=Math.max(new Date(t.end)-now,0),sec=Math.floor(diff/1000),d=Math.floor(sec/86400),h=Math.floor((sec%86400)/3600),m=Math.floor((sec%3600)/60),s=sec%60;['days','hours','minutes','seconds'].forEach((unit,i)=>{document.getElementById(`${t.prefix}-${unit}`).textContent=pad([d,h,m,s][i]);});});
+      }
+
+      monthsInput.addEventListener('input',updateCountdown);
+      updateCountdown();
+      setInterval(updateCountdown,1000);
+
+      // Easter egg on IDDQ: combine interdobs and go-live, plus yellow screen
+      const seq=['I','D','D','Q'];let pos=0;const combinedEgg=document.getElementById('combined-egg');
+      window.addEventListener('keydown',e=>{
+        const key=e.key.toUpperCase();
+        if(key===seq[pos]){
+          pos++;
+          if(pos===seq.length){
+            interdobsMode=true;
+            const goLive=new Date();goLive.setMonth(goLive.getMonth()+6);
+            combinedEgg.innerHTML=`🐰🥚 Happy Easter! INTERDOBS MODE Activated! Migration time halved! 🥚🎯 Go Live: ${goLive.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} 🎯🐰`;
+            combinedEgg.style.display='block';
+            document.body.classList.add('easter-mode');
+            updateCountdown();
+            setTimeout(()=>{combinedEgg.style.display='none';document.body.classList.remove('easter-mode');},7000);
+            pos=0;
+          }
+        } else {pos=key===seq[0]?1:0;}
+      });
+    })();
+  </script>
+</body>
+</html>
