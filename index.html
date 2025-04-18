@@ -40,14 +40,46 @@
     #migration-msg { display:block; margin-top:0.5rem; color: #f56565; font-weight:600; }
     h2{ font-size:1.7rem; margin:0 0 1rem; font-weight:600; }
     section { max-width:65rem; width:100%; padding:0 1rem; }
-    .timer{ display:flex; gap:2rem; justify-content:center; font-size:3rem; font-weight:600; padding:1rem 0.5rem 2rem; }
+    .timer{ display:flex; gap:2rem; justify-content:center; font-size:3rem; font-weight:600; padding:1rem 0.5rem 2rem; flex-wrap:wrap; }
     .unit{ display:flex; flex-direction:column; align-items:center; }
     .value{ min-width:4ch; }
     .label{ font-size:0.8rem; font-weight:400; text-transform:uppercase; letter-spacing:0.05em; margin-top:0.5rem; color:var(--sub); }
-    .cta{ display:inline-block; margin:3rem auto; padding:0.85rem 2rem; background:var(--accent); color:#fff; font-weight:600; border-radius:0.5rem; text-decoration:none; transition:background 0.2s,transform 0.2s; }
+    .cta{
+      display:inline-block;
+      margin:2rem auto;
+      padding:0.85rem 2rem;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+      border-radius:0.5rem;
+      text-decoration:none;
+      transition:background 0.2s,transform 0.2s;
+      max-width:300px;
+      width:auto;
+    }
     .cta:hover{ background:var(--accent-hover); transform:translateY(-2px); }
     .cta:active{ transform:translateY(0); }
     hr{ border:none; border-top:1px solid var(--sub); width:50%; margin:2rem auto; opacity:0.4; }
+
+    /* Responsive adjustments for small screens */
+    @media (max-width: 600px) {
+      body { padding:2rem 0.5rem; }
+      h1 { font-size:2rem; margin-bottom:1.5rem; }
+      .subtext { font-size:0.9rem; padding:0 0.5rem; }
+      .subtext input { width:5ch; font-size:0.9rem; }
+      .timer { font-size:2rem; gap:1rem; padding:0.5rem 0; }
+      .value { min-width:3ch; }
+      .label { font-size:0.7rem; }
+      h2 { font-size:1.4rem; }
+      .cta {
+        padding:0.7rem 1.2rem;
+        font-size:0.9rem;
+        max-width:200px;
+        margin:1.5rem auto;
+      }
+      hr { width:80%; }
+    }
+
     /* Easter egg banner */
     @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-10px); } }
     #combined-egg {
@@ -63,7 +95,6 @@
       z-index:1000;
       font-size:1.1rem;
       animation:bounce 0.5s ease infinite alternate;
-      /* Removed mix-blend-mode for readability */
     }
   </style>
 </head>
@@ -97,14 +128,14 @@
   </section>
   <div id="combined-egg"></div>
   <hr>
-<a
-  class="cta"
-  href="https://www.interdobs.nl/welcome-to-the-future-of-your-sap-datawarehousing-environment/"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  Please help me
-</a>
+  <a
+    class="cta"
+    href="https://www.interdobs.nl/welcome-to-the-future-of-your-sap-datawarehousing-environment/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Please help me
+  </a>
 
   <script>
     (function(){
@@ -129,7 +160,17 @@
         daysEl.textContent=days;
         dateEl.textContent=migrationStart.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
         msgEl.textContent=days<0?'Ran out of time!':'';
-        targets.forEach(t=>{const diff=Math.max(new Date(t.end)-now,0),sec=Math.floor(diff/1000),d=Math.floor(sec/86400),h=Math.floor((sec%86400)/3600),m=Math.floor((sec%3600)/60),s=sec%60;['days','hours','minutes','seconds'].forEach((unit,i)=>{document.getElementById(`${t.prefix}-${unit}`).textContent=pad([d,h,m,s][i]);});});
+        targets.forEach(t=>{
+          const diff=Math.max(new Date(t.end)-now,0);
+          const sec=Math.floor(diff/1000);
+          const d=Math.floor(sec/86400);
+          const h=Math.floor((sec%86400)/3600);
+          const m=Math.floor((sec%3600)/60);
+          const s=sec%60;
+          ['days','hours','minutes','seconds'].forEach((unit,i)=>{
+            document.getElementById(`${t.prefix}-${unit}`).textContent=pad([d,h,m,s][i]);
+          });
+        });
       }
 
       monthsInput.addEventListener('input',updateCountdown);
