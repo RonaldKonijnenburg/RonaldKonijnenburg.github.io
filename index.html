@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SAP BW 7.5 Retirement Timer</title>
@@ -16,9 +16,9 @@
       --sub:#8b949e;
       --accent:#2563eb;
       --accent-hover:#1d4ed8;
-      --easter-bg:#fff1a8;
-      --easter-border:#fcd34d;
-      --easter-color:#7e3af2;
+      --easter-bg:#1a1f24;      /* darker background for neon effect */
+      --easter-border:#7fffd4;  /* aquamarine neon */
+      --easter-color:#39ff14;   /* neon green */
     }
     *{box-sizing:border-box;}
     body{
@@ -34,7 +34,6 @@
       padding:3rem 1rem;
       transition: background 0.3s ease, color 0.3s ease;
     }
-    /* Easter mode body style */
     .easter-mode { background: var(--easter-bg); color: var(--easter-color); }
     h1{ font-size:2.5rem; line-height:1.2; margin:0 0 2rem; }
     .subtext{ font-size:1rem; color:var(--sub); margin:0 auto 2rem; max-width:600px; padding:0 1rem; line-height:1.5; }
@@ -64,8 +63,6 @@
     .cta:hover{ background:var(--accent-hover); transform:translateY(-2px); }
     .cta:active{ transform:translateY(0); }
     hr{ border:none; border-top:1px solid var(--sub); width:50%; margin:2rem auto; opacity:0.4; }
-
-    /* Responsive adjustments for small screens */
     @media (max-width: 600px) {
       body { padding:2rem 0.5rem; }
       h1 { font-size:2rem; margin-bottom:1.5rem; }
@@ -75,41 +72,28 @@
       .value { min-width:3ch; }
       .label { font-size:0.7rem; }
       h2 { font-size:1.4rem; }
-      .cta {
-        padding:0.7rem 1.2rem;
-        font-size:0.9rem;
-        max-width:200px;
-        margin:1.5rem auto;
-      }
+      .cta { padding:0.7rem 1.2rem; font-size:0.9rem; max-width:200px; margin:1.5rem auto; }
       hr { width:80%; }
     }
-
-    /* Easter egg banner */
-    @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-10px); } }
+    @keyframes neon-pulse {
+      0%, 100% { box-shadow: 0 0 8px var(--easter-border), 0 0 16px var(--easter-border); }
+      50% { box-shadow: 0 0 16px var(--easter-border), 0 0 24px var(--easter-border); }
+    }
     #combined-egg {
       display:none;
       position:fixed;
-      top:15%; left:50%; transform:translateX(-50%);
+      top:20%; left:50%; transform:translateX(-50%);
       background:var(--easter-bg);
       color:var(--easter-color);
-      border:2px dashed var(--easter-border);
-      padding:1rem 2rem;
+      border:2px solid var(--easter-border);
+      padding:1.5rem 2rem;
       border-radius:1rem;
-      box-shadow:0 6px 12px rgba(0,0,0,0.3);
+      text-align:center;
       z-index:1000;
-      font-size:1.1rem;
-      animation:bounce 0.5s ease infinite alternate;
+      font-size:1.2rem;
+      animation:neon-pulse 1.5s ease-in-out infinite;
     }
   </style>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZM4H06PMR"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DZM4H06PMR');
-</script>
 </head>
 <body>
   <h1>SAP BW 7.5 Retirement Timer</h1>
@@ -190,7 +174,7 @@
       updateCountdown();
       setInterval(updateCountdown,1000);
 
-      // Easter egg on IDDQ: combine interdobs and go-live, plus yellow screen
+      // Easter egg on IDDQ: Warp Speed Mode!
       const seq=['I','D','D','Q'];let pos=0;const combinedEgg=document.getElementById('combined-egg');
       window.addEventListener('keydown',e=>{
         const key=e.key.toUpperCase();
@@ -198,12 +182,12 @@
           pos++;
           if(pos===seq.length){
             interdobsMode=true;
-            const goLive=new Date();goLive.setMonth(goLive.getMonth()+6);
-            combinedEgg.innerHTML=`🐰🥚 Happy Easter! INTERDOBS MODE Activated! Migration time halved! 🥚🎯 Go Live: ${goLive.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} 🎯🐰`;
+            const warpDate=new Date();warpDate.setMonth(warpDate.getMonth()+3);
+            combinedEgg.innerHTML = `🎉🚀 Warp Speed Mode Activated!<br> Migration time slashed in half! 🚀🎉<br><a href="https://www.interdobs.nl/warp-speed-mode" target="_blank" style="color:var(--easter-color); text-decoration:underline; font-weight:bold;">Launch Migration Accelerator</a><br> Estimated Go-Live: ${warpDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
             combinedEgg.style.display='block';
             document.body.classList.add('easter-mode');
             updateCountdown();
-            setTimeout(()=>{combinedEgg.style.display='none';document.body.classList.remove('easter-mode');},7000);
+            setTimeout(()=>{combinedEgg.style.display='none';document.body.classList.remove('easter-mode');},8000);
             pos=0;
           }
         } else {pos=key===seq[0]?1:0;}
