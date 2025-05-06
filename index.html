@@ -16,9 +16,9 @@
       --sub:#8b949e;
       --accent:#2563eb;
       --accent-hover:#1d4ed8;
-      --easter-bg:#1a1f24;      /* darker background for neon effect */
-      --easter-border:#7fffd4;  /* aquamarine neon */
-      --easter-color:#39ff14;   /* neon green */
+      --easter-bg:#1a1f24;
+      --easter-border:#7fffd4;
+      --easter-color:#39ff14;
     }
     *{box-sizing:border-box;}
     body{
@@ -93,6 +93,29 @@
       font-size:1.2rem;
       animation:neon-pulse 1.5s ease-in-out infinite;
     }
+    /* Inline DoomPDF overlay */
+    #doom-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+    }
+    #doom-overlay iframe {
+      width: 100%; height: 100%; border: none;
+    }
+    #doom-close {
+      position: fixed;
+      top: 1rem; right: 1rem;
+      padding: 0.5rem 1rem;
+      background: #f56565;
+      color: #fff;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      z-index: 10001;
+    }
   </style>
 </head>
 <body>
@@ -106,7 +129,7 @@
   <hr>
   <section aria-labelledby="bw75-heading">
     <h2 id="bw75-heading">SAP BW 7.5</h2>
-    <div class="timer" role="group" aria-label="Countdown for SAP BW 7.5 on HANA">
+    <div class="timer" role="group" aria-label="Countdown for SAP BW 7.5 on HANA">
       <div class="unit"><span id="bw75-days" class="value">0</span><span class="label">Days</span></div>
       <div class="unit"><span id="bw75-hours" class="value">0</span><span class="label">Hours</span></div>
       <div class="unit"><span id="bw75-minutes" class="value">0</span><span class="label">Minutes</span></div>
@@ -124,15 +147,15 @@
     </div>
   </section>
   <div id="combined-egg"></div>
+
+  <!-- Inline Doom overlay -->
+  <div id="doom-overlay">
+    <iframe src="https://doompdf.pages.dev/doom.pdf" title="Doom PDF Emulator"></iframe>
+    <button id="doom-close">✖ Close DOOM</button>
+  </div>
+
   <hr>
-  <a
-    class="cta"
-    href="https://www.interdobs.nl/welcome-to-the-future-of-your-sap-datawarehousing-environment/"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Please help me
-  </a>
+  <a class="cta" href="https://www.interdobs.nl/welcome-to-the-future-of-your-sap-datawarehousing-environment/" target="_blank" rel="noopener noreferrer">Please help me</a>
 
   <script>
     (function(){
@@ -174,23 +197,59 @@
       updateCountdown();
       setInterval(updateCountdown,1000);
 
-      // Easter egg on IDDQ: Warp Speed Mode!
+      // Easter egg: Warp Speed Mode (IDDQ)
       const seq=['I','D','D','Q'];let pos=0;const combinedEgg=document.getElementById('combined-egg');
-      window.addEventListener('keydown',e=>{
-        const key=e.key.toUpperCase();
-        if(key===seq[pos]){
+
+      // Easter egg: Doom overlay via PDF (IDDQT)
+      const doomSeq=['I','D','D','Q','T'];let doomPos=0;
+      const overlay=document.getElementById('doom-overlay');
+      const closeBtn=document.getElementById('doom-close');
+
+      function showEasterThenDoom() {
+        // First show warp-speed egg
+        interdobsMode = true;
+        const warpDate = new Date(); warpDate.setMonth(warpDate.getMonth() + 3);
+        combinedEgg.innerHTML = `🎉🚀 Warp Speed Mode Activated!<br> Migration time slashed in half! 🚀🎉<br><a href="https://www.interdobs.nl/dwc/sap-bw-7-5-pce-in-business-data-cloud-the-legacy-objects-dilemma" target="_blank" style="color:var(--easter-color); text-decoration:underline; font-weight:bold;">Launch Migration Accelerator</a><br> Estimated Go-Live: ${warpDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
+        combinedEgg.style.display = 'block';
+        document.body.classList.add('easter-mode');
+        updateCountdown();
+        // After 5s, hide egg and show PDF overlay
+        setTimeout(() => {
+          combinedEgg.style.display = 'none';
+          document.body.classList.remove('easter-mode');
+          overlay.style.display = 'block';
+        }, 5000);
+      }
+
+      closeBtn.addEventListener('click', () => {
+        overlay.style.display = 'none';
+      });
+
+      window.addEventListener('keydown', e => {
+        const key = e.key.toUpperCase();
+
+        // Warp-speed logic
+        if (key === seq[pos]) {
           pos++;
-          if(pos===seq.length){
-            interdobsMode=true;
-            const warpDate=new Date();warpDate.setMonth(warpDate.getMonth()+3);
-            combinedEgg.innerHTML = `🎉🚀 Warp Speed Mode Activated!<br> Migration time slashed in half! 🚀🎉<br><a href="https://www.interdobs.nl/dwc/sap-bw-7-5-pce-in-business-data-cloud-the-legacy-objects-dilemma" target="_blank" style="color:var(--easter-color); text-decoration:underline; font-weight:bold;">Launch Migration Accelerator</a><br> Estimated Go-Live: ${warpDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
-            combinedEgg.style.display='block';
-            document.body.classList.add('easter-mode');
-            updateCountdown();
-            setTimeout(()=>{combinedEgg.style.display='none';document.body.classList.remove('easter-mode');},8000);
-            pos=0;
+          if (pos === seq.length) {
+            // existing warp behavior
+            showEasterThenDoom(); // also triggers PDF after 5s
+            pos = 0;
           }
-        } else {pos=key===seq[0]?1:0;}
+        } else {
+          pos = key === seq[0] ? 1 : 0;
+        }
+
+        // Doom overlay logic
+        if (key === doomSeq[doomPos]) {
+          doomPos++;
+          if (doomPos === doomSeq.length) {
+            showEasterThenDoom();
+            doomPos = 0;
+          }
+        } else {
+          doomPos = key === doomSeq[0] ? 1 : 0;
+        }
       });
     })();
   </script>
