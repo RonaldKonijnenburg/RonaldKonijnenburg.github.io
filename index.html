@@ -93,7 +93,7 @@
       font-size:1.2rem;
       animation:neon-pulse 1.5s ease-in-out infinite;
     }
-    /* Inline DoomPDF overlay */
+    /* Inline Doom overlay */
     #doom-overlay {
       display: none;
       position: fixed;
@@ -150,7 +150,12 @@
 
   <!-- Inline Doom overlay -->
   <div id="doom-overlay">
-    <iframe src="https://doompdf.pages.dev/doom.pdf" title="Doom PDF Emulator"></iframe>
+    <iframe
+      src="https://doomonline1.vercel.app/dos.html"
+      title="DOOM in Browser"
+      allow="autoplay; fullscreen"
+      sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-fullscreen"
+    ></iframe>
     <button id="doom-close">✖ Close DOOM</button>
   </div>
 
@@ -198,22 +203,27 @@
       setInterval(updateCountdown,1000);
 
       // Easter egg: Warp Speed Mode (IDDQ)
-      const seq=['I','D','D','Q'];let pos=0;const combinedEgg=document.getElementById('combined-egg');
+      const seq=['I','D','D','Q']; let pos=0;
+      const combinedEgg=document.getElementById('combined-egg');
 
-      // Easter egg: Doom overlay via PDF (IDDQT)
-      const doomSeq=['I','D','D','Q','T'];let doomPos=0;
+      // Easter egg: Doom overlay via DOSBox page (IDDQD)
+      const doomSeq=['I','D','D','Q','D']; let doomPos=0;
       const overlay=document.getElementById('doom-overlay');
       const closeBtn=document.getElementById('doom-close');
 
       function showEasterThenDoom() {
-        // First show warp-speed egg
         interdobsMode = true;
         const warpDate = new Date(); warpDate.setMonth(warpDate.getMonth() + 3);
-        combinedEgg.innerHTML = `💣🚀💀 DOOM Speed Mode Activated!<br> Migration time slashed in half! 💀🚀💣<br><a href="https://www.interdobs.nl/dwc/sap-bw-7-5-pce-in-business-data-cloud-the-legacy-objects-dilemma" target="_blank" style="color:var(--easter-color); text-decoration:underline; font-weight:bold;">Launch Migration Accelerator</a><br> Estimated Go-Live: ${warpDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
+        combinedEgg.innerHTML = `💣🚀💀 DOOM Speed Mode Activated!<br>
+          Migration time slashed in half! 💀🚀💣<br>
+          <a href="https://www.interdobs.nl/dwc/sap-bw-7-5-pce-in-business-data-cloud-the-legacy-objects-dilemma"
+             target="_blank" style="color:var(--easter-color);text-decoration:underline;font-weight:bold;">
+            Launch Migration Accelerator
+          </a><br>
+          Estimated Go-Live: ${warpDate.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
         combinedEgg.style.display = 'block';
         document.body.classList.add('easter-mode');
         updateCountdown();
-        // After 5s, hide egg and show PDF overlay
         setTimeout(() => {
           combinedEgg.style.display = 'none';
           document.body.classList.remove('easter-mode');
@@ -227,20 +237,17 @@
 
       window.addEventListener('keydown', e => {
         const key = e.key.toUpperCase();
-
         // Warp-speed logic
         if (key === seq[pos]) {
           pos++;
           if (pos === seq.length) {
-            // existing warp behavior
-            showEasterThenDoom(); // also triggers PDF after 5s
+            showEasterThenDoom();
             pos = 0;
           }
         } else {
           pos = key === seq[0] ? 1 : 0;
         }
-
-        // Doom overlay logic
+        // Doom overlay logic (IDDQD)
         if (key === doomSeq[doomPos]) {
           doomPos++;
           if (doomPos === doomSeq.length) {
